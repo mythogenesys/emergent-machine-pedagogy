@@ -1,0 +1,41 @@
+# ===== Configuration for Emergent Machine Pedagogy Experiments =====
+
+# --- Global Settings ---
+run_mode: "full" # Can be "full" or "dry-run"
+seed: 42
+output_dir_base: "results"
+
+# --- Model Paths (Used inside the Docker container) ---
+# The Dockerfile sets the MODEL_PATH env var, but we keep it here for clarity
+# and for local runs if needed.
+llm_model_path: "/app/models/gguf/Phi-3-mini-4k-instruct-q4.gguf"
+
+# --- Algorithm Hyperparameters ---
+sft:
+  k_samples: 2
+  m_tournaments: 10
+
+grpo_base:
+  iterations: 10
+  n_batch: 4
+  temperature: 0.8
+  
+grpo_constant:
+  constant_alpha: 0.1
+
+degrpo:
+  alpha_base: 0.1
+
+ssca:
+  num_sessions: 10
+
+# --- Dry Run Settings ---
+# These settings will be used if run_mode is "dry-run"
+dry_run:
+  sft:
+    m_tournaments: 2
+  grpo_base:
+    iterations: 2
+    n_batch: 2
+  ssca:
+    num_sessions: 2

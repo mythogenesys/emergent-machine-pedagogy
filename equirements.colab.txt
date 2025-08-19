@@ -1,0 +1,14 @@
+# ===== Requirements for Google Colab (T4 GPU) =====
+
+# Crucial: These flags tell pip to build llama-cpp-python with CUDA support.
+# The --force-reinstall and --no-cache-dir flags are important on Colab
+# to ensure it doesn't use a pre-cached CPU-only wheel.
+llama-cpp-python[server]==0.2.77 --force-reinstall --no-cache-dir --verbose
+
+# Core dependencies (versions can be looser here as Colab is a standard env)
+torch
+sentence-transformers
+pandas
+scikit-learn
+tqdm
+pyyaml

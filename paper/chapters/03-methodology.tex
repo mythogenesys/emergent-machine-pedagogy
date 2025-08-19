@@ -1,0 +1,58 @@
+% ===== chapters/03-methodology.tex (NEW) =====
+\chapter{Methodology and Computational Framework}
+\label{chap:methodology}
+
+This chapter details the concrete implementation of the theoretical concepts introduced in \Cref{chap:theory}. We describe the computational models, the instantiation of the COGNITA agents, the specific algorithms under test, and the operationalization of our core metrics. This serves as the bridge between our formal framework and the empirical results presented in \Cref{chap:experiments}.
+
+\section{Computational Framework and Models}
+All experiments are implemented in Python 3. To ensure reproducibility and performance, our framework is built on a stable, locally-run stack.
+
+\begin{itemize}
+    \item \textbf{Language Model:} The core generative capability is provided by the \texttt{Phi-3-mini-4k-instruct} model, run locally via the \texttt{llama-cpp-python} library with GPU acceleration. This provides consistent, deterministic outputs required for controlled experimentation.
+    \item \textbf{Semantic Embedding Model:} To compute rewards and semantic similarity, we use the \texttt{all-MiniLM-L6-v2} model from the \texttt{sentence-transformers} library. This model maps text into a 384-dimensional vector space where cosine similarity corresponds to semantic closeness.
+    \item \textbf{Cross-Modal Embedding Model:} For the CLIP-based diversity experiments, we use the \texttt{clip-ViT-B-32} model, which provides embeddings in a shared visual-semantic space.
+\end{itemize}
+
+\section{Instantiation of the COGNITA Agents}
+The abstract agents of the COGNITA game are realized as follows in our experiments:
+
+\begin{itemize}
+    \item \textbf{The Teacher ($\mathbb{T}$) and Student ($\mathbb{S}$):} These are implemented as the core of the \textbf{Self-Structuring Cognitive Agent (SSCA)}. The \texttt{TeacherAgent} implements the DE-GRPO algorithm to refine its teaching policy. Critically, its reward function is state-aware, incorporating a \emph{strategic bonus} based on the novelty of an explanation relative to the Student's current knowledge state. The \texttt{StudentAgent} maintains a \texttt{state\_vector}, a numerical representation of its understanding, which is updated based on the Teacher's explanations. This vector is a direct implementation of Vygotsky's Zone of Proximal Development.
+    
+    \item \textbf{The Verifier ($\mathbb{V}$):} The Verifier is operationalized as an automated evaluation function, \texttt{calculate\_efficacy}, detailed in \Cref{sec:metrics}. It assesses the quality of a Teacher's explanation by using the base LLM as a "student proxy" to answer a standardized quiz. The quiz score serves as the external, objective reward signal that grounds the Teacher's learning process.
+    
+    \item \textbf{The Curriculum Generator ($\mathbb{C}$):} In the current experimental suite, the curriculum is static. It consists of three distinct pedagogical tasks: explaining entropy, the significance of D-Day, and the intuition behind Euler's identity. The development of a dynamic curriculum generator, which would adapt the task based on the Student's state, remains a key direction for future work.
+\end{itemize}
+
+\section{Algorithm Implementation}
+\label{sec:algo_implementation}
+The core experiments in \texttt{run\_full\_suite.py} compare three main algorithmic instantiations.
+
+\subsection{SFT (The Imitator)}
+The Supervised Fine-Tuning baseline is implemented via in-context learning. As described in \texttt{contender1\_sft.py}, we perform a tournament selection over the expert dataset. In each round, we randomly sample $k=2$ expert examples to form a prompt and generate a response. The policy that yields the response with the highest cosine similarity to the target concept vector is selected as the best static policy, representing the practical Imitation Ceiling, $\eta$.
+
+\subsection{GRPO (Evolutionary Search)}
+The Generative Reward Policy Optimization (GRPO) framework forms the basis of our explorers. The core loop, shared across all variants, is as follows:
+\begin{enumerate}
+    \item Given a policy (a set of few-shot examples), generate a batch of $n=4$ candidate responses at a high temperature to encourage exploration.
+    \item Score each candidate based on a specific scoring function.
+    \item Identify the best-performing candidate from the batch.
+    \item Identify the worst-performing example in the current policy.
+    \item Replace the worst example with the best candidate, creating an improved policy for the next iteration.
+\end{enumerate}
+
+\subsection{DE-GRPO (The Principled Inventor)}
+Our main contribution, DE-GRPO, is implemented in \texttt{contender2\_degrpo.py}. It uses a state-aware scoring function that balances reward and diversity. The final score for a candidate response is:
+\[ \text{Score} = R(\pi) + \alpha_t \cdot D(\pi) \]
+where $R(\pi)$ is the reward (efficacy), $D(\pi)$ is the textual diversity of the batch, and $\alpha_t$ is the dynamic diversity coefficient, defined as:
+\[ \alpha_t = \alpha_{\text{base}} \cdot (1 - \overline{R(\pi)}) \]
+This formulation directly implements our theory: when the average reward $\overline{R(\pi)}$ is low, the agent is likely stuck in a local optimum, so the diversity bonus $\alpha_t$ increases, encouraging exploration. When reward is high, $\alpha_t$ decreases, favoring exploitation.
+
+\section{Metric Operationalization}
+\label{sec:metrics}
+The theoretical concepts of efficacy and novelty are calculated as follows in our analysis script, \texttt{analyze\_results.py}.
+
+\begin{itemize}
+    \item \textbf{Efficacy (Reward):} This metric quantifies the quality of a generated explanation. We use the base LLM as a student proxy and administer a short, standardized quiz based on the explanation. Efficacy is the resulting percentage of correctly answered questions. This provides a functional, objective measure of pedagogical success.
+    \item \textbf{Novelty:} This metric measures an explanation's originality. It is calculated as one minus the maximum cosine similarity between the explanation's embedding and the embeddings of all examples in the expert dataset. A high novelty score indicates a generated strategy that is semantically distinct from any provided human data.
+\end{itemize}

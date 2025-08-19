@@ -1,0 +1,109 @@
+% ===== main.tex (CORRECTED & UPGRADED) =====
+\documentclass[12pt, letterpaper, onecolumn]{report}
+
+% --- CORE PACKAGES ---
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm, mathtools} % <-- CORRECTED THIS LINE
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, decorations.pathmorphing, shapes.geometric, calc}
+\usepackage[authoryear]{natbib}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{subcaption}
+\usepackage[nameinlink,capitalize]{cleveref} % Loaded for smart referencing
+\usepackage{nomencl}
+\makenomenclature
+
+% --- STYLING ---
+\onehalfspacing
+\setcounter{tocdepth}{3} % Show subsubsections in ToC
+\urlstyle{same} 
+
+% --- THEOREM ENVIRONMENTS (CORRECTED) ---
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{proposition}[theorem]{Proposition} % Shares counter with theorem
+\newtheorem{lemma}[theorem]{Lemma}             % Shares counter with theorem
+\newtheorem{corollary}[theorem]{Corollary}       % Shares counter with theorem
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}     % Shares counter with theorem
+\newtheorem{assumption}[theorem]{Assumption}     % Shares counter with theorem
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}             % Shares counter with theorem
+
+
+% --- CUSTOM COMMANDS ---
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\Eff}{\mathcal{E}}
+\newcommand{\Nov}{\mathcal{N}}
+\newcommand{\Hc}{H_c}
+\newcommand{\alg}{\mathcal{A}}
+\newcommand{\I}{\mathcal{I}}
+
+% --- TITLE PAGE INFORMATION ---
+\title{
+    \vspace{1in}
+    \textbf{Emergent Machine Pedagogy: \\ A Game-Theoretic Framework for Autonomous Teaching} \\
+    
+}
+\author{Mohana Rangan Desigan}
+\date{August 17, 2025}
+
+% --- DOCUMENT START ---
+\begin{document}
+
+\maketitle
+\cleardoublepage
+
+% --- FRONT MATTER ---
+\pagenumbering{roman}
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\input{chapters/00-abstract}
+\cleardoublepage
+
+\chapter*{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+\input{chapters/00-acknowledgments}
+\cleardoublepage
+
+\tableofcontents
+\cleardoublepage
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+\cleardoublepage
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+\cleardoublepage
+
+% --- MAIN MATTER ---
+\pagenumbering{arabic}
+
+\input{chapters/01-intro}
+\input{chapters/02-theory}
+\input{chapters/03-methodology}
+\input{chapters/04-experiments}
+\input{chapters/05-broader}
+
+% --- APPENDIX ---
+\appendix
+\input{appendix/appendixA}
+
+% --- BIBLIOGRAPHY ---
+\cleardoublepage
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliographystyle{plainnat}
+\bibliography{refs}
+
+\end{document}

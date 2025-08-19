@@ -1,0 +1,21 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# IDE / OS files
+.vscode/
+.idea/
+*.DS_Store
+
+# Large data and model files
+models/
+results/
+results_ssca/
+final_summary_results.csv
+
+# Python environments
+venv/
+*.env
+
+# Notebook checkpoints
+.ipynb_checkpoints

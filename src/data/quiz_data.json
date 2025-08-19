@@ -1,0 +1,14 @@
+{
+  "entropy": {
+    "quiz_prompt": "Based *only* on the previous explanation, answer the following questions with True or False:\n\n1. A system with many possible arrangements has low entropy.\n2. Entropy is related to the amount of predictability in a system.\n3. An increase in disorder corresponds to an increase in entropy.",
+    "answers": ["False", "True", "True"]
+  },
+  "d-day": {
+    "quiz_prompt": "Based *only* on the previous explanation, answer the following questions with True or False:\n\n1. The D-Day landings were a minor part of World War II.\n2. The explanation emphasizes that the success of D-Day was guaranteed from the start.\n3. The landings involved immense courage and risk from individual soldiers.",
+    "answers": ["False", "False", "True"]
+  },
+  "eulers_identity": {
+    "quiz_prompt": "Based *only* on the previous explanation, answer the following questions with True or False:\n\n1. Euler's Identity relates five of the most fundamental constants in mathematics.\n2. The explanation suggests that `e` represents a form of continuous rotation.\n3. The identity is primarily useful for calculating simple interest on a loan.",
+    "answers": ["True", "True", "False"]
+  }
+}

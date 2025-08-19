@@ -1,0 +1,51 @@
+% ===== appendix/appendixA.tex (CORRECTED) =====
+\chapter{Implementation and Reproducibility}
+\label{app:implementation}
+
+This dissertation is supported by a fully local, reproducible software pipeline, designed to run without cloud dependencies using open-source models and libraries. This appendix provides a guide to the codebase structure and key components.
+
+\section{Core Algorithm Implementations}
+The five contender algorithms are implemented as distinct Python scripts:
+
+% --- FIX: Added itemize environment ---
+\begin{itemize}[leftmargin=*]
+    \item \texttt{contender1\_sft.py} --- \textbf{SFT (The Imitator):} Selects the best static prompt from the expert dataset based on performance on a held-out set.
+    \item \texttt{contender\_grpo\_normal.py} --- \textbf{GRPO-Normal (Naive Explorer):} A basic evolutionary search without explicit diversity control.
+    \item \texttt{contender\_grpo\_constant.py} --- \textbf{GRPO-Constant (Simple Inventor):} Augments GRPO with a fixed diversity bonus.
+    \item \texttt{contender2\_degrpo.py} --- \textbf{DE-GRPO (Principled Inventor):} The core algorithm, featuring dynamic, state-aware diversity.
+    \item \texttt{run\_ssca\_experiment.py} --- \textbf{SSCA (Cognitive Agent):} The full multi-agent system instantiating the COGNITA game.
+\end{itemize}
+% ------------------------------------
+
+\section{Pipeline and Analysis Suite}
+The experimental pipeline is managed by a set of orchestration and analysis scripts:
+
+% --- FIX: Added itemize environment ---
+\begin{itemize}[leftmargin=*]
+    \item \texttt{common.py}: Contains shared utilities, including the local \texttt{llama-cpp-python} back-end and metric functions (\texttt{get\_embedding}, \texttt{cosine\_similarity}).
+    \item \texttt{run\_full\_suite.py}: The main script for running head-to-head algorithm comparisons.
+    \item \texttt{analyze\_results.py}: Ingests raw JSON logs from experiments and generates the final data tables and 'pgfplots' code for the figures in this dissertation.
+\end{itemize}
+% ------------------------------------
+
+\section{Computational Environment}
+All experiments were conducted on a single machine with the following specifications:
+
+% --- FIX: Added itemize environment ---
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Hardware:} Apple M2 Max with 64GB RAM.
+    \item \textbf{GPU Acceleration:} Achieved via the Metal Performance Shaders (MPS) back-end for PyTorch.
+    \item \textbf{Core Libraries:} Python 3.10, PyTorch 2.1, \texttt{llama-cpp-python} 0.2.11, pandas 2.0, scikit-learn 1.3.
+    \item \textbf{Base Model:} A 4-bit quantized version of Phi-3-mini-4k.
+\end{itemize}
+% ------------------------------------
+
+\section{Data Artifacts}
+All data is stored in simple, human-readable formats:
+
+% --- FIX: Added itemize environment ---
+\begin{itemize}[leftmargin=*]
+    \item \texttt{*\_expert\_data.jsonl}: Contains the curated expert exemplars for each domain.
+    \item \texttt{quiz\_data.json}: A structured quiz for each topic, used by the Verifier to calculate efficacy.
+\end{itemize}
+% ------------------------------------

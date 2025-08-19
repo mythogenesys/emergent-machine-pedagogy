@@ -1,0 +1,10 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces The COGNITA stochastic game: four agents interact through language actions with state transitions $\mathcal {T}$ and rewards $R_i$.}}{5}{figure.caption.8}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Agent Learning Trajectory. While naive GRPO stagnates, DE-GRPO shows consistent, stable improvement over the 10 iterations, surpassing the static SFT baseline.}}{26}{figure.caption.14}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Final Response Quality \& Novelty. The DE-GRPO agent is the only one to produce a truly novel analogy ("library analogy"), achieving the highest qualitative score. This supports the Critical Diversity Threshold theorem.}}{27}{figure.caption.15}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Exploration Dynamics. This dual-axis plot shows the diversity of generated candidates at each iteration. Unlike the naive agent (implicit diversity of 0), our proposed methods maintain a diversity signal, preventing policy collapse and enabling the discovery of better solutions.}}{28}{figure.caption.16}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }

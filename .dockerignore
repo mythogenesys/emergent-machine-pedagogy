@@ -1,0 +1,23 @@
+# --- .dockerignore ---
+# Ignore large model files. The Dockerfile will download its own copy.
+*.gguf
+
+# Ignore Python virtual environments if you have one in the project dir
+venv/
+icpo-env/
+.venv/
+
+# Ignore results and temporary files
+results/
+results_ssca/
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+
+# Ignore Git directory
+.git/
+
+# Ignore other project directories not needed in the container
+a/
+proposal/
