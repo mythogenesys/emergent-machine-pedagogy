@@ -4,6 +4,14 @@ import time
 import argparse
 import pandas as pd
 from tqdm import tqdm
+import sys
+
+# --- START OF FIX: Make the script runnable from anywhere ---
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+# --- END OF FIX ---
+
 from src.common import get_embedding, cosine_similarity
 from src.agent_teacher import TeacherAgent
 from src.agent_student import StudentAgent
@@ -12,16 +20,18 @@ def run_ssca_session(task_name, task_query, target_concept, num_sessions=10):
     print(f"\n{'='*20} STARTING SSCA SESSION FOR TASK: {task_name.upper()} {'='*20}")
 
     # --- Setup ---
-    # We provide the Teacher with an initial "textbook" (SFT policy) to start
     expert_data_path = f'src/data/{task_name}_expert_data.jsonl'
     with open(expert_data_path, 'r') as f:
-        initial_policy = [json.loads(line) for line in f][:2] # Start with 2 expert examples
+        initial_policy = [json.loads(line) for line in f][:2]
 
     teacher = TeacherAgent(initial_policy)
     student = StudentAgent()
     target_vector = get_embedding(target_concept)
     
-    history = []
+    # --- START OF FIX: Initialize containers for both logs ---
+    session_history = []
+    full_verbose_log = {}
+    # --- END OF FIX ---
 
     for session in tqdm(range(num_sessions), desc=f"SSCA Teaching Sessions ({task_name})"):
         print(f"\n---------- Teaching Session {session + 1}/{num_sessions} ----------")
@@ -33,6 +43,10 @@ def run_ssca_session(task_name, task_query, target_concept, num_sessions=10):
         )
         print(f"Teacher Explains: {explanation[:120]}...")
 
+        # --- START OF FIX: Save the verbose history for this session ---
+        full_verbose_log[f"session_{session + 1}"] = teacher_learning_history
+        # --- END OF FIX ---
+
         # 2. Student learns and critiques
         re_explanation, clarifying_question = student.learn_and_critique(explanation)
         print(f"Student Re-explains: {re_explanation[:120]}...")
@@ -41,7 +55,7 @@ def run_ssca_session(task_name, task_query, target_concept, num_sessions=10):
         # 3. We measure the outcome of this session
         efficacy_score = cosine_similarity(get_embedding(re_explanation), target_vector)
         
-        history.append({
+        session_history.append({
             'session': session + 1,
             'efficacy_score': efficacy_score,
             'teacher_explanation': explanation,
@@ -50,14 +64,22 @@ def run_ssca_session(task_name, task_query, target_concept, num_sessions=10):
         })
         print(f"Session Efficacy: {efficacy_score:.4f}")
     
-    # --- Save Results ---
+    # --- START OF FIX: Save both the CSV and the JSON verbose log ---
     output_dir = "results_ssca"
     os.makedirs(output_dir, exist_ok=True)
     run_id = int(time.time())
-    output_filename = os.path.join(output_dir, f"{task_name}_ssca_{run_id}.csv")
     
-    pd.DataFrame(history).to_csv(output_filename, index=False)
-    print(f"\n✅ SSCA session complete. Full history saved to {output_filename}")
+    # Save the main CSV results
+    output_filename_csv = os.path.join(output_dir, f"{task_name}_ssca_results_{run_id}.csv")
+    pd.DataFrame(session_history).to_csv(output_filename_csv, index=False)
+    print(f"\n✅ SSCA session results saved to {output_filename_csv}")
+
+    # Save the verbose JSON log
+    output_filename_json = os.path.join(output_dir, f"{task_name}_ssca_verbose_log_{run_id}.json")
+    with open(output_filename_json, 'w') as f:
+        json.dump(full_verbose_log, f, indent=4)
+    print(f"✅ SSCA verbose logs saved to {output_filename_json}")
+    # --- END OF FIX ---
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the Self-Structuring Cognitive Agent experiment.")
