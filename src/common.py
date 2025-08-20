@@ -10,13 +10,13 @@ print("--- Loading Foundational Models ---")
 # --- MODIFICATION ---
 # Get the model path from an environment variable for container flexibility.
 # Default to the local path if the variable is not set.
-model_path = os.getenv("MODEL_PATH", "models/Phi-3-mini-4k-instruct-q4.gguf")
+model_path = os.getenv("MODEL_PATH", "/content/drive/MyDrive/EmergentPedagogy/models/Phi-3-mini-4k-instruct-q4.gguf")
 print(f"Loading Llama.cpp model from: {model_path}")
 
 LLM = Llama(
     model_path=model_path,
     n_ctx=2048,
-    n_gpu_layers=0, # Crucial for CPU-only execution in the container
+    n_gpu_layers=-1, # <-- Patched by Colab notebook for full GPU offloading
     verbose=False
 )
 

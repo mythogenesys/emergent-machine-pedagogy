@@ -3,6 +3,15 @@ import json
 import time
 import argparse
 import yaml
+import sys
+import os
+
+import numpy as np
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 from src.common import get_embedding
 from src.contender1_sft import run_sft
 from src.contender_grpo_normal import run_grpo_normal
@@ -24,6 +33,16 @@ def load_config(config_path, mode):
         # Add other overrides as needed
         
     return config
+
+def convert_floats(data):
+  if isinstance(data, dict):
+      return {k: convert_floats(v) for k, v in data.items()}
+  elif isinstance(data, list):
+      return [convert_floats(i) for i in data]
+  elif isinstance(data, np.float32):
+      return float(data)
+  else:
+      return data
 
 def run_experiment_for_task(task_name: str, task_query: str, target_concept: str, config: dict):
     print(f"\n{'='*20} RUNNING EXPERIMENT SUITE FOR TASK: {task_name.upper()} {'='*20}")
@@ -86,11 +105,12 @@ def run_experiment_for_task(task_name: str, task_query: str, target_concept: str
     results_filename = os.path.join(output_dir, f"{task_name}_results_{run_id}.json")
     with open(results_filename, 'w') as f:
         json.dump(results, f, indent=4)
-        
+
+
     verbose_filename = os.path.join(output_dir, f"{task_name}_verbose_log_{run_id}.json")
     with open(verbose_filename, 'w') as f:
-        json.dump(verbose_logs, f, indent=4)
-        
+      clean_logs = convert_floats(verbose_logs)
+      json.dump(clean_logs, f, indent=4)        
     print(f"\n{'='*20} EXPERIMENT FOR TASK '{task_name.upper()}' COMPLETE {'='*20}")
     print(f"Simple results saved to: {results_filename}")
     print(f"Verbose logs saved to: {verbose_filename}")
